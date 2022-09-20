@@ -24,10 +24,12 @@ State = namedtuple('State', ['is_infected', 'idx'])
 class SingleUninfected(MDP):
     """MDP model with P-1 infected states that trasition between a single uninfected state
     """
-    def __init__(self, n_antigens, n_antigen_patterns, n_effector_cells) -> None:
+    def __init__(self, n_antigens, n_antigen_patterns, n_effector_cells, infection_rate) -> None:
         self.N = n_antigens # variety of antigens
         self.P = n_antigen_patterns # number of states
         self.M = n_effector_cells # number of actions
+        self.R0 = self.M/2
+        self.infection_rate = infection_rate
 
         self.states = np.random.randint(2, size=(self.N, self.P))
         self.actions = np.random.randint(2, size=(self.M, self.P))
@@ -38,7 +40,27 @@ class SingleUninfected(MDP):
         self.uninfected_action = self.actions[0, :]
         self.infected_actions = self.actions[1:, :]
 
+        # intialize state as uninfected -> index is nan
         self.current_state = State(False, np.nan)
+
+    def reward(self, action):
+        """_summary_
+
+        :param action: _description_
+        :type action: _type_
+        :return: _description_
+        :rtype: _type_
+        """
+        if self.current_state.is_infected:
+            effective_action = self.infected_actions[:, self.current_state.idx]
+        else:
+            effective_action = self.uninfected_action
+        # hamming returns a % so need to multiply by length of array
+        return self.M - hamming(effective_action, action)*len(action)
+
+    def optimal_reward(self):
+        # optimal reward is obtained when hamming function is equal to 0
+        return self.M
 
     def initial_state(self):
         """Initialize state
@@ -50,4 +72,28 @@ class SingleUninfected(MDP):
             return self.infected_states[:, self.current_state.idx]
         else:
             return self.uninfected_state
+
+    def new_state(self, action):
+        """_summary_
+
+        :param action: _description_
+        :type action: _type_
+        """
+        if self.current_state.is_infected:
+            # already infected, determin transition probability to go back uninfected
+            effective_action = self.infected_actions[:, self.current_state.idx]
+            transition_prob_thresh = (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)
+            if np.random.binomial(1, transition_prob_thresh):
+                # probability under threshold -> transition to healthy state
+                self.current_state = State(False, np.nan)
+                return self.uninfected_state
+            else:
+                if np.random.binomial(1, self.infection_rate):
+                    # healthy -> infected (fixed probability)
+                    self.current_state = State(True, np.random.randint(self.P)) # uniform probabilty chosen from P-1 pathogens
+                    return self.infected_states[:, self.current_state.idx]
+                else:
+                    # healthy -> healthy
+                    self.current_state = State(False, np.nan)
+                    return self.uninfected_state
 
