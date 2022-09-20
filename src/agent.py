@@ -3,8 +3,10 @@ import numpy as np
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
 class Agent:
-    # agent interacts with environement
-    # follows a policy to generate an action in response to observing a state
+    """ An agent interacts with the environment
+    it follows a policy to generate an action in response to a state obeservation.
+
+    """
 
     def __init__(self, n_clones, n_antigen_patterns, n_effector_cells):
         
@@ -21,15 +23,40 @@ class Agent:
         self.activity = None
 
     def _activity(self, state):
+        """Binary Th cell activity depending on an input state
+
+        :param state: antigen pattern
+        :type state: binary array
+        :return: clone activity
+        :rtype: array
+        """
         return sigmoid(np.dot(self.interaction_strength, state))
 
     def policy(self, state, beta):
+        """ Policy for effector cell activation
+
+        :param state: antigen pattern
+        :type state: binary array
+        :param beta: cost scaling parameters
+        :type beta: float
+        :return: effector cell activation map
+        :rtype: array
+        """
         activity = self._activity(state)
         proba = sigmoid(beta*np.dot(self.clone_size, activity))
         # return action
         return np.random.binomial(1, proba)
 
     def q_function(self, state, action):
+        """ Q function : quality of state-action combination
+
+        :param state: antigen pattern
+        :type state: binary array
+        :param action: effector cell activation pattern
+        :type action: binary array
+        :return: q function - conditional probability
+        :rtype: array
+        """
         activity = self._activity(state)
         return np.dot(np.dot(self.clone_size, activity), np.dot(self.stimulus_strength, action))
 
