@@ -44,12 +44,16 @@ class SingleUninfected(MDP):
         self.current_state = State(False, np.nan)
 
     def reward(self, action):
-        """_summary_
+        """ reward function:
+        This functional form indicates
+        that the immune system receives the highest reward M when
+        the activity pattern a matches the most effective one for the
+        antigen pattern
 
-        :param action: _description_
-        :type action: _type_
-        :return: _description_
-        :rtype: _type_
+        :param action: effector cell activation pattern
+        :type action: binary array
+        :return: state-action reward
+        :rtype: array
         """
         if self.current_state.is_infected:
             effective_action = self.infected_actions[:, self.current_state.idx]
@@ -74,10 +78,10 @@ class SingleUninfected(MDP):
             return self.uninfected_state
 
     def new_state(self, action):
-        """_summary_
+        """ Transition function from state s(t) to s(t+1)
 
-        :param action: _description_
-        :type action: _type_
+        :param action: effector cell activation pattern
+        :type action: binary array
         """
         if self.current_state.is_infected:
             # already infected, determin transition probability to go back uninfected
