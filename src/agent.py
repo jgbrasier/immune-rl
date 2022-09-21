@@ -12,7 +12,7 @@ class Agent:
         
         self.P = n_antigen_patterns
         self.M = n_effector_cells
-        self.clone_size((n_clones, ))
+        self.clone_size = np.ones((n_clones, ))
         # Th clone <-> antigen interaction
         # affinity of a TCR towards antigen should be sparse
         # 1 TCR only reacts with a small number of antigens
