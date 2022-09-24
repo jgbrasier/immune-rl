@@ -43,7 +43,7 @@ class Agent:
         :rtype: array
         """
         activity = self._activity(state)
-        proba = sigmoid(beta*np.dot(self.clone_size, activity))
+        proba = sigmoid(beta*self.clone_size*activity)
         # return action
         return np.random.binomial(1, proba)
 
