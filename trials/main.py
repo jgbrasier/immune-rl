@@ -1,5 +1,8 @@
 # main file to run learning trials
+import os
+import sys
 
+sys.path.insert(0, os.getcwd())
 
 from src.sim import Environment
 

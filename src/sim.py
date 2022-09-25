@@ -1,8 +1,8 @@
 import numpy as np
 from tqdm import tqdm
 
-from agent import Agent
-from mdp import SingleUninfected
+from src.agent import Agent
+from src.mdp import SingleUninfected
 
 class Environment:
 
