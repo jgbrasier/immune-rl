@@ -1,7 +1,7 @@
 # main file to run learning trials
 
 
-from sim import Environment
+from src.sim import Environment
 
 max_epoch = 1000
 n_clones = 5000 # K
