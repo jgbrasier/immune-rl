@@ -97,7 +97,7 @@ class SingleUninfected(MDP):
         else:
             if np.random.binomial(1, self.infection_rate):
                 # healthy -> infected (fixed probability)
-                self.current_state = State(True, np.random.randint(self.P)) # uniform probabilty chosen from P-1 pathogens
+                self.current_state = State(True, np.random.randint(self.P-1)) # uniform probabilty chosen from P-1 pathogens
                 return self.infected_states[:, self.current_state.idx]
             else:
                 # healthy -> healthy
