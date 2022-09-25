@@ -31,14 +31,14 @@ class SingleUninfected(MDP):
         self.R0 = self.M/2
         self.infection_rate = infection_rate
 
-        self.states = np.random.randint(2, size=(self.N, self.P))
-        self.actions = np.random.randint(2, size=(self.M, self.P))
+        self.states = np.random.randint(2, size=(self.N, self.P)) # [number of antigens, number of patterns]
+        self.actions = np.random.randint(2, size=(self.M, self.P)) # [number of effector cells, number of patterns]
 
-        self.uninfected_state = self.states[0, :]
-        self.infected_states = self.states[1:, :]
+        self.uninfected_state = self.states[:, 0] # vector of len N
+        self.infected_states = self.states[:, 1:]
         
-        self.uninfected_action = self.actions[0, :]
-        self.infected_actions = self.actions[1:, :]
+        self.uninfected_action = self.actions[:, 0] # vector of len M
+        self.infected_actions = self.actions[:, 1:]
 
         # intialize state as uninfected -> index is nan
         self.current_state = State(False, np.nan)
@@ -86,18 +86,21 @@ class SingleUninfected(MDP):
         if self.current_state.is_infected:
             # already infected, determin transition probability to go back uninfected
             effective_action = self.infected_actions[:, self.current_state.idx]
-            transition_prob_thresh = (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)
+            transition_prob_thresh = max([0, (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)])
             if np.random.binomial(1, transition_prob_thresh):
                 # probability under threshold -> transition to healthy state
                 self.current_state = State(False, np.nan)
                 return self.uninfected_state
             else:
-                if np.random.binomial(1, self.infection_rate):
-                    # healthy -> infected (fixed probability)
-                    self.current_state = State(True, np.random.randint(self.P)) # uniform probabilty chosen from P-1 pathogens
-                    return self.infected_states[:, self.current_state.idx]
-                else:
-                    # healthy -> healthy
-                    self.current_state = State(False, np.nan)
-                    return self.uninfected_state
+                # if not, stay at infected state
+                return self.infected_states[:, self.current_state.idx]
+        else:
+            if np.random.binomial(1, self.infection_rate):
+                # healthy -> infected (fixed probability)
+                self.current_state = State(True, np.random.randint(self.P)) # uniform probabilty chosen from P-1 pathogens
+                return self.infected_states[:, self.current_state.idx]
+            else:
+                # healthy -> healthy
+                self.current_state = State(False, np.nan)
+                return self.uninfected_state
 

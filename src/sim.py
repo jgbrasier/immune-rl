@@ -11,7 +11,7 @@ class Environment:
 
     def simulate(self, max_epoch, n_clones, n_antigens, n_antigen_patterns, n_effector_cells) -> None:
 
-        agent = Agent(n_clones, n_antigen_patterns, n_effector_cells)
+        agent = Agent(n_clones, n_antigens, n_effector_cells)
         mdp = SingleUninfected(n_antigens, n_antigen_patterns, n_effector_cells, infection_rate=0.9)
 
         state = mdp.initial_state()

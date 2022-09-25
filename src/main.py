@@ -4,10 +4,10 @@
 from sim import Environment
 
 max_epoch = 1000
-n_clones = 5000
-n_antigens = 100
-n_antigen_patterns = 30 
-n_effector_cells = 20
+n_clones = 5000 # K
+n_antigens = 100 # N
+n_antigen_patterns = 30 # P
+n_effector_cells = 20 # M
 
 
 env = Environment()
