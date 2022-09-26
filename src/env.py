@@ -31,7 +31,7 @@ class Environment:
             json.dump(self.save_dict, fp, sort_keys=True, indent=4)
 
 
-    def simulate(self, max_epoch, n_clones, n_antigens, n_antigen_patterns, n_effector_cells) -> None:
+    def simulate(self, max_epoch, lr, n_clones, n_antigens, n_antigen_patterns, n_effector_cells, record_every=1000) -> None:
 
         # intialise agent and MDP
         agent = Agent(n_clones, n_antigens, n_effector_cells)
@@ -47,16 +47,18 @@ class Environment:
         beta = np.linspace(1.0, 20.0, max_epoch)
 
         # run trial
-        for i, epoch in enumerate(tqdm(range(max_epoch))):
-            action = agent.policy(state, beta[i])
+        for epoch in tqdm(range(max_epoch)):
+            action = agent.policy(state, beta[epoch])
             reward = mdp.reward(action)
-            agent.learn(state, action, reward, lr=0.01)
+            agent.learn(state, action, reward, lr=lr)
             state = mdp.new_state(action)
 
-            # save clone size evolution
-            self.save_dict['clone_size'][:, i] = agent.clone_size
-            self.save_dict['reward'][i] = reward
-            self.save_dict['state'][:, i] = state
+            # record every x epochs
+            if epoch%record_every == 0:
+                # save clone size evolution
+                self.save_dict['clone_size'][:, epoch] = agent.clone_size
+                self.save_dict['reward'][epoch] = reward
+                self.save_dict['state'][:, epoch] = state
 
         
         self._save_trial()
