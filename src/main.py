@@ -6,7 +6,7 @@ sys.path.insert(0, os.getcwd())
 
 from src.env import Environment
 
-max_epoch = 1000
+max_epoch = 10000
 n_clones = 5000 # K
 n_antigens = 100 # N
 n_antigen_patterns = 30 # P
