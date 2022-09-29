@@ -17,3 +17,4 @@ n_effector_cells = 20 # M
 env = Environment(logdir='./logs')
 
 env.simulate(max_epoch, lr, n_clones, n_antigens, n_antigen_patterns, n_effector_cells)
+

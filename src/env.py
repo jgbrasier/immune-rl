@@ -38,9 +38,9 @@ class Environment:
         mdp = SingleUninfected(n_antigens, n_antigen_patterns, n_effector_cells, infection_rate=0.9)
         state = mdp.initial_state()
 
-        self.save_dict['clone_size'] = np.zeros((len(agent.clone_size), max_epoch))
-        self.save_dict['reward'] = np.zeros(max_epoch)
-        self.save_dict['state'] = np.zeros((len(state), max_epoch))
+        self.save_dict['clone_size'] = np.zeros((len(agent.clone_size), max_epoch//record_every))
+        self.save_dict['reward'] = np.zeros(max_epoch//record_every)
+        self.save_dict['state'] = np.zeros((len(state), max_epoch//record_every))
  
         #beta = 5.0 
         # # linearly scale beta from 1.0 to 20.0 with epochs
@@ -55,10 +55,17 @@ class Environment:
 
             # record every x epochs
             if epoch%record_every == 0:
+                idx = epoch//record_every
                 # save clone size evolution
-                self.save_dict['clone_size'][:, epoch] = agent.clone_size
-                self.save_dict['reward'][epoch] = reward
-                self.save_dict['state'][:, epoch] = state
+                # print('reward:', reward)
+                # print('max clone size:', np.max(agent.clone_size))
+                # print('min clone size:', np.min(agent.clone_size))
+                self.save_dict['clone_size'][:, idx] = agent.clone_size
+                self.save_dict['reward'][idx] = reward
+                self.save_dict['state'][:, idx] = state
 
         
         self._save_trial()
+
+
+

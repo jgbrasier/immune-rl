@@ -71,3 +71,4 @@ class Agent:
         lambda_ = (reward - q)*activity*np.dot(self.stimulus_strength.T, action)
         self.clone_size += lr * self.clone_size * lambda_
         self.clone_size = np.maximum(self.clone_size, 0) # ensures positive clone sizes
+

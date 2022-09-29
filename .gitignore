@@ -1,5 +1,6 @@
 # project related files
 /logs
+/notebooks
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -4,6 +4,8 @@ import numpy as np
 from collections import namedtuple
 from scipy.spatial.distance import hamming
 
+# def hamming(a, b):
+#   return np.sum(np.logical_not(np.logical_xor(a, b)))
 
 class MDP:
     @abstractclassmethod
@@ -86,7 +88,9 @@ class SingleUninfected(MDP):
         if self.current_state.is_infected:
             # already infected, determin transition probability to go back uninfected
             effective_action = self.infected_actions[:, self.current_state.idx]
-            transition_prob_thresh = max([0, (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)])
+            # transition_prob_thresh = max([0, (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)])
+            transition_prob_thresh = max([0, (hamming(effective_action, action)*len(action))/(self.M)])
+            # print('thresh:', transition_prob_thresh)
             if np.random.binomial(1, transition_prob_thresh):
                 # probability under threshold -> transition to healthy state
                 self.current_state = State(False, np.nan)
@@ -103,4 +107,6 @@ class SingleUninfected(MDP):
                 # healthy -> healthy
                 self.current_state = State(False, np.nan)
                 return self.uninfected_state
+
+
 
