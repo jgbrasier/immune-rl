@@ -38,14 +38,19 @@ class Environment:
         agent = Agent(n_hidden, state_dimension, action_dimension)
         mdp = SingleUninfected(n_states, state_dimension, action_dimension, infection_rate=0.5)
         state = mdp.initial_state()
-
+        action = agent.policy(state, 1.0)
+        
         self.save_dict['clone_size'] = np.zeros((len(agent.clone_size), max_epoch//record_every))
         self.save_dict['reward'] = np.zeros(max_epoch//record_every)
         self.save_dict['state'] = np.zeros((len(state), max_epoch//record_every))
+        self.save_dict['action'] = np.zeros((len(action), max_epoch//record_every))
+        self.save_dict['w'] = agent.w
+        self.save_dict['u'] = agent.u
  
         #beta = 5.0 
         # # linearly scale beta from 1.0 to 20.0 with epochs
         beta = np.linspace(1.0, 20.0, max_epoch)
+        self.save_dict['beta'] = beta
 
         # run trial
         for epoch in tqdm(range(max_epoch)):
