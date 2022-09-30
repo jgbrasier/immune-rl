@@ -8,9 +8,10 @@ from src.mdp import SingleUninfected
 
 class Environment:
 
-    def __init__(self, logdir) -> None:
+    def __init__(self, logdir, seed=4) -> None:
         self.logdir = logdir
         self.save_dict = dict()
+        self.seed = seed
         self._init_logir()
 
     def _init_logir(self):
@@ -31,11 +32,11 @@ class Environment:
             json.dump(self.save_dict, fp, sort_keys=True, indent=4)
 
 
-    def simulate(self, max_epoch, lr, n_clones, n_antigens, n_antigen_patterns, n_effector_cells, record_every=1000) -> None:
-
+    def simulate(self, max_epoch, lr, n_states, state_dimension, action_dimension, n_hidden,  record_every=1000) -> None:
+        np.random.seed(seed=self.seed)
         # intialise agent and MDP
-        agent = Agent(n_clones, n_antigens, n_effector_cells)
-        mdp = SingleUninfected(n_antigens, n_antigen_patterns, n_effector_cells, infection_rate=0.9)
+        agent = Agent(n_hidden, state_dimension, action_dimension)
+        mdp = SingleUninfected(n_states, state_dimension, action_dimension, infection_rate=0.5)
         state = mdp.initial_state()
 
         self.save_dict['clone_size'] = np.zeros((len(agent.clone_size), max_epoch//record_every))

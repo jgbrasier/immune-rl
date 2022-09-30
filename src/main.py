@@ -8,13 +8,13 @@ from src.env import Environment
 
 max_epoch = 100000
 lr = 0.1
-n_clones = 5000 # K
-n_antigens = 100 # N
-n_antigen_patterns = 30 # P
-n_effector_cells = 20 # M
+n_hidden = 5000 # K
+n_states = 30 # P
+state_dimension = 100 # N
+n_actions = 20 # M
 
 
-env = Environment(logdir='./logs')
+env = Environment(logdir='./logs', seed=6)
 
-env.simulate(max_epoch, lr, n_clones, n_antigens, n_antigen_patterns, n_effector_cells)
+env.simulate(max_epoch, lr, n_states, state_dimension, n_actions, n_hidden)
 

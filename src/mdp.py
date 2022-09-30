@@ -2,10 +2,10 @@ from abc import abstractclassmethod
 import numpy as np
 
 from collections import namedtuple
-from scipy.spatial.distance import hamming
+# from scipy.spatial.distance import hamming
 
-# def hamming(a, b):
-#   return np.sum(np.logical_not(np.logical_xor(a, b)))
+def hamming(a, b):
+  return np.sum(np.logical_not(np.logical_xor(a, b)))
 
 class MDP:
     @abstractclassmethod
@@ -26,10 +26,10 @@ State = namedtuple('State', ['is_infected', 'idx'])
 class SingleUninfected(MDP):
     """MDP model with P-1 infected states that trasition between a single uninfected state
     """
-    def __init__(self, n_antigens, n_antigen_patterns, n_effector_cells, infection_rate) -> None:
-        self.N = n_antigens # variety of antigens
-        self.P = n_antigen_patterns # number of states
-        self.M = n_effector_cells # number of actions
+    def __init__(self, n_states, state_dimension, action_dimension, infection_rate) -> None:
+        self.N = state_dimension 
+        self.P = n_states 
+        self.M = action_dimension 
         self.R0 = self.M/2
         self.infection_rate = infection_rate
 
@@ -62,7 +62,7 @@ class SingleUninfected(MDP):
         else:
             effective_action = self.uninfected_action
         # hamming returns a % so need to multiply by length of array
-        return self.M - hamming(effective_action, action)*len(action)
+        return hamming(effective_action, action)# *len(action)
 
     def optimal_reward(self):
         # optimal reward is obtained when hamming function is equal to 0
@@ -89,9 +89,10 @@ class SingleUninfected(MDP):
             # already infected, determin transition probability to go back uninfected
             effective_action = self.infected_actions[:, self.current_state.idx]
             # transition_prob_thresh = max([0, (self.M - hamming(effective_action, action)*len(action) - self.R0)/(self.M - self.R0)])
-            transition_prob_thresh = max([0, (hamming(effective_action, action)*len(action))/(self.M)])
+            transition_prob_thresh = max([0, (hamming(effective_action, action))/(self.M)])
             # print('thresh:', transition_prob_thresh)
-            if np.random.binomial(1, transition_prob_thresh):
+            # if np.random.binomial(1, transition_prob_thresh):
+            if np.random.rand() < transition_prob_thresh:
                 # probability under threshold -> transition to healthy state
                 self.current_state = State(False, np.nan)
                 return self.uninfected_state
@@ -99,7 +100,8 @@ class SingleUninfected(MDP):
                 # if not, stay at infected state
                 return self.infected_states[:, self.current_state.idx]
         else:
-            if np.random.binomial(1, self.infection_rate):
+            # if np.random.binomial(1, 1-self.infection_rate):
+            if np.random.rand() < self.infection_rate:
                 # healthy -> infected (fixed probability)
                 self.current_state = State(True, np.random.randint(self.P-1)) # uniform probabilty chosen from P-1 pathogens
                 return self.infected_states[:, self.current_state.idx]

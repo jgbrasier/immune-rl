@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.getcwd())
 
 # load last trial
-logdir = '../logs'
+logdir = './logs'
 trials = sorted(os.listdir(logdir))
 
 def load_trials(logdir: str, trial_name: str) -> dict:
