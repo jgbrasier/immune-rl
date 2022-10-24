@@ -1,4 +1,4 @@
-# Understanding the Th cell clonal selection using RL
+# Understanding Th cell clonal selection using RL
 
 Jean-Guillaume Brasier (IACS Harvard), Marink Zitnik (DBMI Harvard Medical School)
 
